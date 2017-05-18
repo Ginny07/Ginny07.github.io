@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Volley+ListView制作留言栏  | Ginny&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="功能：下拉刷新加载留言+上传留言。 实现：Volley 获取/上传 数据，handler实现异步消息处理，JSON解析，自定义Adapter将数据填入ListView中，SwipeRefreshLayout下拉刷新。 请求接口：http://mclee.cn/getJson.php 上传接口：http://mclee.cn/postJson.php   1）Volley框架—— 获取/上传 数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Volley+ListView制作留言栏 ">
+<meta property="og:url" content="https://github.com/Ginny07/Ginny07.github.io/2017/05/17/Volley-ListView制作留言栏/index.html">
+<meta property="og:site_name" content="Ginny&#39;s blog">
+<meta property="og:description" content="功能：下拉刷新加载留言+上传留言。 实现：Volley 获取/上传 数据，handler实现异步消息处理，JSON解析，自定义Adapter将数据填入ListView中，SwipeRefreshLayout下拉刷新。 请求接口：http://mclee.cn/getJson.php 上传接口：http://mclee.cn/postJson.php   1）Volley框架—— 获取/上传 数">
+<meta property="og:image" content="http://img.blog.csdn.net/20170516200951987?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvR2lubnlfNw==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170516201054222?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvR2lubnlfNw==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-05-17T09:59:51.819Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Volley+ListView制作留言栏 ">
+<meta name="twitter:description" content="功能：下拉刷新加载留言+上传留言。 实现：Volley 获取/上传 数据，handler实现异步消息处理，JSON解析，自定义Adapter将数据填入ListView中，SwipeRefreshLayout下拉刷新。 请求接口：http://mclee.cn/getJson.php 上传接口：http://mclee.cn/postJson.php   1）Volley框架—— 获取/上传 数">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170516200951987?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvR2lubnlfNw==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+  
+    <link rel="alternate" href="/atom.xml" title="Ginny&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Ginny&#39;s blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://github.com/Ginny07/Ginny07.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Volley-ListView制作留言栏" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/05/17/Volley-ListView制作留言栏/" class="article-date">
+  <time datetime="2017-05-17T09:25:55.000Z" itemprop="datePublished">2017-05-17</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Volley+ListView制作留言栏 
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <a id="more"></a>
+<ul>
+<li>功能：下拉刷新加载留言+上传留言。</li>
+<li>实现：Volley 获取/上传 数据，handler实现异步消息处理，JSON解析，自定义Adapter将数据填入ListView中，SwipeRefreshLayout下拉刷新。</li>
+<li>请求接口：<a href="http://mclee.cn/getJson.php" target="_blank" rel="external">http://mclee.cn/getJson.php</a></li>
+<li>上传接口：<a href="http://mclee.cn/postJson.php" target="_blank" rel="external">http://mclee.cn/postJson.php</a></li>
+</ul>
+<!--more-->
+<h4 id="1）Volley框架——-获取-上传-数据"><a href="#1）Volley框架——-获取-上传-数据" class="headerlink" title="1）Volley框架—— 获取/上传 数据"></a>1）Volley框架—— 获取/上传 数据</h4><p>Volley是一个网络通信框架，适合进行数据量不大，但网络通信频繁的网络操作。</p>
+<h6 id="1-获取数据"><a href="#1-获取数据" class="headerlink" title="1.获取数据"></a>1.获取数据</h6><h6 id="①导入Volley的jar包：在build-grade中添加"><a href="#①导入Volley的jar包：在build-grade中添加" class="headerlink" title="①导入Volley的jar包：在build.grade中添加"></a>①导入Volley的jar包：在build.grade中添加</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">compile&apos;com.android.volley:volley:1.0.0&apos;</div></pre></td></tr></table></figure>
+<h6 id="②获取RequestQueue对象："><a href="#②获取RequestQueue对象：" class="headerlink" title="②获取RequestQueue对象："></a>②获取RequestQueue对象：</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">RequestQueue rQueue = Volley.newRequestQueue(MainActitvity.this);</div></pre></td></tr></table></figure>
+<h6 id="③创建StringRequest对象："><a href="#③创建StringRequest对象：" class="headerlink" title="③创建StringRequest对象："></a>③创建StringRequest对象：</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">StringRequest stringRequest = new  StringRequest(&quot;http://mclee.cn/getJson.php&quot;,</div><div class="line">new Response.Listener&lt;String&gt;()&#123;</div><div class="line">    public void onResponse(String response)&#123;</div><div class="line">        Message message = handler.obtainMessage();</div><div class="line">        message.what=1;</div><div class="line">        message.obj = response;</div><div class="line">        handler.sendMessage(message);</div><div class="line">    &#125;</div><div class="line">&#125;,new Response.ErrorListener()&#123;</div><div class="line">    public void onErrorResponse(VolleyError error)&#123;</div><div class="line">        handler.sendEmptyMessage(0);</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h6 id="④将StringRequest对象添加到RequestQueue里："><a href="#④将StringRequest对象添加到RequestQueue里：" class="headerlink" title="④将StringRequest对象添加到RequestQueue里："></a>④将StringRequest对象添加到RequestQueue里：</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">rQueue.add(StringRequest);</div></pre></td></tr></table></figure>
+<h6 id="⑤在AndroidManifest-xml中添加网络权限："><a href="#⑤在AndroidManifest-xml中添加网络权限：" class="headerlink" title="⑤在AndroidManifest.xml中添加网络权限："></a>⑤在AndroidManifest.xml中添加网络权限：</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;uses-permission android:name=&quot;android.permission.INTERNET&quot; /&gt;</div></pre></td></tr></table></figure>
+<!--more-->
+<h6 id="2-上传数据"><a href="#2-上传数据" class="headerlink" title="2.上传数据"></a>2.上传数据</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">putMessage.setOnClickListener(new View.OnClickListener() &#123;</div><div class="line">            @Override</div><div class="line">            public void onClick(View v) &#123;</div><div class="line">                RequestQueue requestQueue = Volley.newRequestQueue(PostMessage.this);</div><div class="line">                StringRequest request = new StringRequest(Request.Method.POST,&quot;http://mclee.cn/postJson.php&quot;, new Response.Listener&lt;String&gt;() &#123;</div><div class="line">                    @Override</div><div class="line">                    public void onResponse(String response) &#123;</div><div class="line">                    &#125;</div><div class="line">                &#125;, new Response.ErrorListener() &#123;</div><div class="line">                    @Override</div><div class="line">                   public void onErrorResponse(VolleyError error) &#123;</div><div class="line">                    &#125;</div><div class="line">                &#125;)&#123;</div><div class="line">                    @Override</div><div class="line">                    protected Map&lt;String, String&gt; getParams() throws AuthFailureError &#123;</div><div class="line">                        Map&lt;String,String&gt; map = new HashMap&lt;String, String&gt;();</div><div class="line">                        String result = eText.getText().toString();</div><div class="line">                        map.put(&quot;json&quot;,result);</div><div class="line">                        return map;</div><div class="line">                    &#125;</div><div class="line">                &#125;;</div><div class="line">                requestQueue.add(request);</div><div class="line">            &#125;</div><div class="line">        &#125;);</div></pre></td></tr></table></figure>
+<!--more-->
+<h4 id="2）JSON数据解析"><a href="#2）JSON数据解析" class="headerlink" title="2）JSON数据解析"></a>2）JSON数据解析</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">Handler handler = new Handler()&#123;</div><div class="line">    public void handleMessage(Message msg) &#123;</div><div class="line">        super.handleMessage(msg);</div><div class="line">        switch (msg.what)&#123;</div><div class="line">            case 1:</div><div class="line">                JSONArray array = new JSONArray((String)msg.obj);</div><div class="line">                for (int i =0;i&lt;array.length();i++)&#123;</div><div class="line">                    JSONObject object = array.getJSONObject(i);</div><div class="line">                    String result = object.getString(&quot;message&quot;);</div><div class="line">                    list.add(result);</div><div class="line">                &#125;</div><div class="line">                lv.setAdapter(new Adapter(MainActivity.this,list));</div><div class="line">                break;</div><div class="line">            case 0:</div><div class="line">                Toast.makeText(MainActivity.this,&quot;网络异</div><div class="line">                常&quot;,Toast.LENGTH_SHORT).show();</div><div class="line">                break;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<!--more-->
+<h4 id="3-自定义Adapter，向ListView中填入数据"><a href="#3-自定义Adapter，向ListView中填入数据" class="headerlink" title="3)自定义Adapter，向ListView中填入数据"></a>3)自定义Adapter，向ListView中填入数据</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">public class Adapter extends BaseAdapter &#123;</div><div class="line">    private TextView textView;</div><div class="line">    private List&lt;String&gt; list;</div><div class="line">    private Context context ;</div><div class="line">    public Adapter (Context context, List&lt;String&gt; list)&#123;</div><div class="line">        this.list = list;</div><div class="line">        this.context = context;</div><div class="line">    &#125;</div><div class="line">    @Override</div><div class="line">    public int getCount() &#123;</div><div class="line">        return list.size();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public Object getItem(int position) &#123;</div><div class="line">        return list.get(position);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public long getItemId(int position) &#123;</div><div class="line">        return position;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public View getView(int position, View convertView, ViewGroup parent) &#123;</div><div class="line">        View view = LayoutInflater.from(context).inflate(R.layout.item,null);</div><div class="line">        textView=(TextView)view.findViewById(R.id.text);</div><div class="line">        textView.setText(list.get(position));</div><div class="line">        return view;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>新建Adapter类继承自BaseAdapter，重写构造方法和默认方法，这里将数据存入list中。</li>
+<li>getCount()：返回ListView中要显示的子View数量，只要返回list的条目数就可以了。</li>
+<li>getItem(int position)：返回ListView中的一个子条目，这里取list中的一条数据。</li>
+<li>getItemId(int position)：根据ListView中的位置返回id。</li>
+<li>getView(int position, View convertView, ViewGroup parent)：返回这个条目的整个信息，它是一个单独的布局文件。通过LayoutInflater类的inflate()方法可以根据布局文件获得其View返回值，再对子组件进行设置。</li>
+</ul>
+<!--more-->
+<h5 id="效果图："><a href="#效果图：" class="headerlink" title="效果图："></a>效果图：</h5><p><img src="http://img.blog.csdn.net/20170516200951987?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvR2lubnlfNw==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" width="30%">  <img src="http://img.blog.csdn.net/20170516201054222?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvR2lubnlfNw==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" width="30%"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://github.com/Ginny07/Ginny07.github.io/2017/05/17/Volley-ListView制作留言栏/" data-id="cj2u2964i0002a4vr8tdilvjh" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/05/18/hello-world/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Hello World
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/05/17/test/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">test</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/05/18/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2017/05/17/Volley-ListView制作留言栏/">Volley+ListView制作留言栏 </a>
+          </li>
+        
+          <li>
+            <a href="/2017/05/17/test/">test</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 Ginny<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
