@@ -1,0 +1,321 @@
+
+
+
+
+
+
+
+<!doctype html>
+<html lang="">
+<head>
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="author" content="Ginny">
+  
+  
+  
+  
+    <meta name="description" content="功能：仿制聊天界面，实现发送消息
+实现：制作点9图作为气泡背景图片，ListView显示消息，判断消息类别（发送/收到）显示相应的item布局。
+
+1）制作.9图
+理解nine——patch（.9.png).9.png是Android中一种特殊的png格式的图片，可以指定图片特定位置拉伸以及填充内容的位置。利用.9.png可以使图片在特定区域拉伸时不会失真。
+制作.9.png格式的气泡图片将...">
+  
+  <title>制作简易聊天界面 [ Ginny's blog ]</title>
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  <link rel="stylesheet" href="/css/random.css">
+<link rel="stylesheet" href="/css/vegas.min.css">
+<link rel="stylesheet" href="/css/highlight-railscasts.css">
+<link rel="stylesheet" href="/css/jquery.fancybox.css">
+<link rel="stylesheet" href="/css/iconfont/iconfont.css">
+<link rel="stylesheet" href="/css/jquery.fancybox-thumbs.css">
+<link rel="stylesheet" href="/css/plyr.css">
+  
+</head>
+
+<body>
+<div class="side-navigate hide-area">
+  
+  
+    <div class="item next">
+      <a href="/2017/05/17/Volley-ListView制作留言栏/">
+        <div class="item-icon"></div>
+      </a>
+      <div class="item-title">
+        Volley+ListView制作留言栏 
+      </div>
+    </div>
+  
+</div>
+<div id="outer-container" class="hide-area">
+<div id="container">
+  <div id="menu-outer" class="slide-down">
+    <div id="menu-inner">
+      <div id="brand">
+        
+        <a onClick="openUserCard()">
+          <img id="avatar" src="http://7te9fe.com1.z0.glb.clouddn.com/default_avatar.jpg"/>
+          <div id="homelink">Ginny's blog</div>
+        </a>
+      </div>
+      <div id="menu-list">
+        <ul>
+        
+        
+          
+            <li>
+          
+            <a href="/index.html">Home</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="/archives">Archives</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="/tags">Tags</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="/categories">Categories</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="/about">About</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="https://github.com/Ginny07">Github</a>
+            
+          </li>
+        
+        </ul>
+      </div>
+      <div id="show-menu">
+        <button>Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="content-outer">
+    <div id="content-inner">
+      
+      
+  <article id="post">
+    <h1>制作简易聊天界面</h1>
+    <p class="page-title-sub">
+      <span id = "post-title-date">撰写于 2017-06-02</span>
+      
+        <span id = "post-title-updated">修改于 2017-06-02</span>
+      
+      
+      
+    </p>
+    
+    <ul>
+<li>功能：仿制聊天界面，实现发送消息</li>
+<li>实现：制作点9图作为气泡背景图片，ListView显示消息，判断消息类别（发送/收到）显示相应的item布局。</li>
+</ul>
+<h3 id="1）制作-9图"><a href="#1）制作-9图" class="headerlink" title="1）制作.9图"></a>1）制作.9图</h3><ol>
+<li><strong>理解nine——patch（.9.png)</strong><br>.9.png是Android中一种特殊的png格式的图片，可以指定图片特定位置拉伸以及填充内容的位置。利用.9.png可以使图片在特定区域拉伸时不会失真。</li>
+<li><strong>制作.9.png格式的气泡图片</strong><br>将背景图片放到res-drawable中，右键选择create 9-patch file。在.png图片四周增加了一个像素点的空白像素，通过在该空白像素区域内绘制黑点来指定特殊区域。<br><img src="http://oqwqpd0r4.bkt.clouddn.com/UF%7DY3_%28N@S3%7D5$RP3IN61%5DI.png" width="500"><br>左边线条：纵向拉伸区域。<br>上边线条：横向拉伸区域。<br>右边线条：填充内容纵向显示区域。<br>下边线条：填充内容横向显示区域。</li>
+</ol>
+<h3 id="2）判别消息类型，显示相应布局"><a href="#2）判别消息类型，显示相应布局" class="headerlink" title="2）判别消息类型，显示相应布局"></a>2）判别消息类型，显示相应布局</h3><p>1.<strong>item.xml</strong><br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">//接收到的消息布局</div><div class="line">&lt;LinearLayout</div><div class="line">        android:id="@+id/left_layout"</div><div class="line">        android:layout_width="wrap_content"</div><div class="line">        android:layout_height="wrap_content"</div><div class="line">        android:layout_gravity="left"</div><div class="line">        android:background="@drawable/left"</div><div class="line">        &gt;</div><div class="line">        &lt;TextView</div><div class="line">            android:layout_width="wrap_content"</div><div class="line">            android:layout_height="wrap_content"</div><div class="line">            android:layout_gravity="center"</div><div class="line">            android:layout_margin="10dp"</div><div class="line">            android:id="@+id/left_tv"</div><div class="line">            android:textColor="#787878"/&gt;</div><div class="line"></div><div class="line">    &lt;/LinearLayout&gt;</div><div class="line">//发送的消息布局</div><div class="line">    &lt;LinearLayout</div><div class="line">        android:layout_width="wrap_content"</div><div class="line">        android:layout_height="wrap_content"</div><div class="line">        android:id="@+id/right_layout"</div><div class="line">        android:background="@drawable/right"</div><div class="line">        android:layout_gravity="right"&gt;</div><div class="line"></div><div class="line">        &lt;TextView</div><div class="line">            android:layout_width="wrap_content"</div><div class="line">            android:layout_height="wrap_content"</div><div class="line">            android:layout_gravity="center"</div><div class="line">            android:id="@+id/right_tv"</div><div class="line">            android:layout_margin="10dp"</div><div class="line">            android:textColor="#000"/&gt;</div><div class="line"></div><div class="line">    &lt;/LinearLayout&gt;</div></pre></td></tr></table></figure></p>
+<p>2.<strong>为消息设置type，区分收到的和发送的消息。通过setVisibility（）方法显示相应的布局。</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span>(msg.getType() == msg.TYPE_RECEIVED)&#123;</div><div class="line">            viewHolder.leftLyaout.setVisibility(View.VISIBLE);</div><div class="line">            viewHolder.rightLayout.setVisibility(View.GONE);</div><div class="line">            viewHolder.left_tv.setText(msg.getStr());</div><div class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(msg.getType() == msg.TYPE_SENT)&#123;</div><div class="line">            viewHolder.rightLayout.setVisibility(View.VISIBLE);</div><div class="line">            viewHolder.leftLyaout.setVisibility(View.GONE);</div><div class="line">            viewHolder.right_tv.setText(msg.getStr());</div><div class="line">        &#125;</div></pre></td></tr></table></figure></p>
+<h3 id="3）效果图"><a href="#3）效果图" class="headerlink" title="3）效果图"></a>3）效果图</h3><p><img src="http://oqwqpd0r4.bkt.clouddn.com/E0A9AF54A9F1A433D84DB39907A75DFC.jpg" width="500"></p>
+
+  </article>
+  <div class="random-toc-area">
+  <button class="btn-hide-toc btn-hide-toc-show" style="display: none" onclick="TOCToggle()">显示目录</button>
+  <button class="btn-hide-toc btn-hide-toc-hide" onclick="TOCToggle()">隐藏目录</button>
+  <div class="random-toc">
+    <h2>目录</h2>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1）制作-9图"><span class="toc-text">1）制作.9图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2）判别消息类型，显示相应布局"><span class="toc-text">2）判别消息类型，显示相应布局</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3）效果图"><span class="toc-text">3）效果图</span></a></li></ol>
+  </div>
+</div>
+
+  
+<nav id="pagination">
+  
+
+  
+
+  
+    <a href="/2017/05/17/Volley-ListView制作留言栏/" class="next">下一篇 Volley+ListView制作留言栏  &rarr;</a>
+  
+</nav>
+
+  <!-- JiaThis Button BEGIN -->
+
+<!-- JiaThis Button END -->
+
+
+      
+      
+      
+    </div>
+  </div>
+
+  <div id="bottom-outer">
+    <div id="bottom-inner">
+      Site by Ginny using
+      <a href="http://hexo.io">Hexo</a> & <a href="https://github.com/stiekel/hexo-theme-random">Random</a>
+      <br>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+
+
+<div id="user-card">
+  <div class="center-field">
+    <img class="avatar" src="http://7te9fe.com1.z0.glb.clouddn.com/default_avatar.jpg">
+    <p id="description"></p>
+    <ul class="social-icon">
+  
+  
+    <li>
+      <a href="https://github.com/Ginny07">
+        
+          <i class="icon iconfont github">&#xe606;</i>
+        
+      </a>
+    </li>
+  
+</ul>
+  </div>
+</div>
+
+
+<div id="btn-view">Hide</div>
+
+<script>
+// is trigger analytics / tongji script
+var isIgnoreHost = false;
+
+if(window && window.location && window.location.host) {
+  isIgnoreHost = ["localhost","127.0.0.1"].some(function(address){
+    return 0 === window.location.host.indexOf(address);
+  });
+}
+
+var isTriggerAnalytics = !( true && isIgnoreHost );
+
+</script>
+
+
+
+
+  
+  
+    <script src="/js/jquery-2.2.3.min.js"></script>
+  
+    <script src="/js/vegas.min.js"></script>
+  
+    <script src="/js/random.js"></script>
+  
+    <script src="/js/highlight.pack.js"></script>
+  
+    <script src="/js/jquery.mousewheel.pack.js"></script>
+  
+    <script src="/js/jquery.fancybox.pack.js"></script>
+  
+    <script src="/js/jquery.fancybox-thumbs.js"></script>
+  
+    <script src="/js/plyr.js"></script>
+  
+
+<script>
+
+  // fancybox
+  var backgroundImages = [];
+  
+  $('#post').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox') || $(this).parent().hasClass('fancybox-thumb')) return;
+      var alt = this.alt || this.title;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'post' + i);
+    });
+  });
+  $(".fancybox").fancybox();
+
+var vegasConfig = {"preload­Image":true,"transition":["slideLeft2","slideRight2","flash2"],"timer":true,"delay":15000,"shuffle":true,"count":28};
+var unsplashConfig = {"gravity":"north"};
+// is show background images
+var turnoffBackgroundImage = false;
+
+
+
+  turnoffBackgroundImage = true;
+
+
+var backgroundColor = "34495E";
+
+$(".fancybox-thumb").fancybox({
+  prevEffect: 'none',
+  nextEffect: 'none',
+  helpers: {
+    title: {
+      type: 'outside'
+    },
+    thumbs: {
+      width: 50,
+      height: 50
+    }
+  }
+});
+
+// show video with plyr
+$(".video-container iframe").each(function(i){
+  var url = $(this).attr('src');
+  var id = url.split('/').pop();
+  var plyrContainer = document.createElement('div');
+  plyrContainer.className = 'plyr';
+  var plyrElement = document.createElement('div');
+  plyrElement.dataset.videoId = id;
+  switch(true) {
+    case url.search('youtube.com') >= 0:
+      plyrElement.dataset.type = 'youtube';
+      break;
+    case url.search('vimeo.com') >= 0:
+      plyrElement.dataset.type = 'vimeo';
+      break;
+    default:
+      return;
+  };
+  plyrContainer.appendChild(plyrElement);
+  $(this).parent().html(plyrContainer);
+});
+plyr.setup('.plyr', {iconUrl: '/css/sprite.svg'});
+</script>
+</body>
+</html>
+
