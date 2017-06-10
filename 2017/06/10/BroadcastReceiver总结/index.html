@@ -1,0 +1,316 @@
+
+
+
+
+
+
+
+<!doctype html>
+<html lang="">
+<head>
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="author" content="Ginny">
+  
+  
+  
+  
+    <meta name="description" content="一、广播机制简介Android中引入了广播机制，用于组件之间、组件内部的消息传递。广播机制主要分为两个方面：广播发送者和广播接收器（BroadcastReceiver——对发送的广播进行过滤接收并响应）。发送者发出一条广播，“订阅”了该广播的接收器就能收到这条广播，并作出相应的响应。在Android中，广播被广泛地使用，例如：在开机后系统会产生一条广播，接收到该广播的应用程序就能启动服务。又...">
+  
+  <title>BroadcastReceiver总结 [ Ginny's blog ]</title>
+  
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  
+  <link rel="stylesheet" href="/css/random.css">
+<link rel="stylesheet" href="/css/vegas.min.css">
+<link rel="stylesheet" href="/css/highlight-railscasts.css">
+<link rel="stylesheet" href="/css/jquery.fancybox.css">
+<link rel="stylesheet" href="/css/iconfont/iconfont.css">
+<link rel="stylesheet" href="/css/jquery.fancybox-thumbs.css">
+<link rel="stylesheet" href="/css/plyr.css">
+  
+</head>
+
+<body>
+<div class="side-navigate hide-area">
+  
+  
+    <div class="item next">
+      <a href="/2017/06/02/制作简易聊天界面/">
+        <div class="item-icon"></div>
+      </a>
+      <div class="item-title">
+        制作简易聊天界面
+      </div>
+    </div>
+  
+</div>
+<div id="outer-container" class="hide-area">
+<div id="container">
+  <div id="menu-outer" class="slide-down">
+    <div id="menu-inner">
+      <div id="brand">
+        
+        <a onClick="openUserCard()">
+          <img id="avatar" src="http://oqwqpd0r4.bkt.clouddn.com/-343f06baf8cfafdd.jpg"/>
+          <div id="homelink">Ginny's blog</div>
+        </a>
+      </div>
+      <div id="menu-list">
+        <ul>
+        
+        
+          
+            <li>
+          
+            <a href="/index.html">Home</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="/archives">Archives</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="https://github.com/Ginny07">Github</a>
+            
+          </li>
+        
+        </ul>
+      </div>
+      <div id="show-menu">
+        <button>Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="content-outer">
+    <div id="content-inner">
+      
+      
+  <article id="post">
+    <h1>BroadcastReceiver总结</h1>
+    <p class="page-title-sub">
+      <span id = "post-title-date">Created at 2017-06-10</span>
+      
+        <span id = "post-title-updated">Updated at 2017-06-10</span>
+      
+      
+      
+      <span id = "post-title-tags">
+      Tag
+      
+      
+        
+        
+        <a href="/tags/Android-BroadcastReiceiver-广播机制/">Android BroadcastReiceiver 广播机制</a>
+      
+      </span>
+      
+    </p>
+    
+    <h3 id="一、广播机制简介"><a href="#一、广播机制简介" class="headerlink" title="一、广播机制简介"></a>一、广播机制简介</h3><p>Android中引入了广播机制，用于组件之间、组件内部的消息传递。广播机制主要分为两个方面：广播发送者和广播接收器（BroadcastReceiver——对发送的广播进行过滤接收并响应）。发送者发出一条广播，“订阅”了该广播的接收器就能收到这条广播，并作出相应的响应。在Android中，广播被广泛地使用，例如：在开机后系统会产生一条广播，接收到该广播的应用程序就能启动服务。又如：应用程序在完成某个事件后发出一条广播，通知另一个应用程序。即广播有系统广播，应用程序也可以自定义广播。</p>
+<hr>
+<h3 id="二、广播的三种类型"><a href="#二、广播的三种类型" class="headerlink" title="二、广播的三种类型"></a>二、广播的三种类型</h3><ol>
+<li>普通广播(Normal Broadcasts)：所有监听该广播的接收器都能收到广播，且没有先后顺序。接收器不能截断广播，也不能处理广播内容。</li>
+<li>有序广播(Ordered Broadcasts)：按照接收者的优先级顺序接收广播，优先级高者可以截断广播。接收者可以对广播内容进行处理。</li>
+<li>异步广播：(粘滞性滞留广播)：不能将处理结果传给下一个接收者，无法终止广播。</li>
+</ol>
+<hr>
+<h3 id="三、BroadcastReceiver的生命周期"><a href="#三、BroadcastReceiver的生命周期" class="headerlink" title="三、BroadcastReceiver的生命周期"></a>三、BroadcastReceiver的生命周期</h3><p>每次广播到来时，会创建一个BroadcastReceive对象，并执行onReceive()方法，执行完后，该对象就会被立即销毁。BroadcastReceive整个生命周期只有十秒左右，如果onReceive()方法在十秒内没有执行完，程序会报错。因此，不能在onReceive()方法中做耗时操作，可以交由Service来完成。</p>
+<hr>
+<h3 id="四、BroadcastReceiver用法"><a href="#四、BroadcastReceiver用法" class="headerlink" title="四、BroadcastReceiver用法"></a>四、BroadcastReceiver用法</h3><h5 id="1-自定义BroadcastReceiver"><a href="#1-自定义BroadcastReceiver" class="headerlink" title="1.自定义BroadcastReceiver"></a>1.自定义BroadcastReceiver</h5><p>继承BroadcastReceiver，实现抽象方法onReceive(context,intent)。在onReceive方法中写收到广播后的响应事件。<br>例：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestBroadcastReceiver</span> <span class="keyword">extends</span> <span class="title">BroadcastReceiver</span></span>&#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onReceive</span><span class="params">(Context context, Intent intent)</span> </span>&#123;</div><div class="line">        Toast.makeText(context,<span class="string">"Received Broadcast"</span>,Toast.LENGTH_LONG).show();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>如果接收的是有序广播，则可在onReiceive方法中对广播内容进行处理或者调用abortBroadcast()方法来截断广播。</p>
+<h5 id="2-注册BrasdcastReceiver——静态-or-动态注册"><a href="#2-注册BrasdcastReceiver——静态-or-动态注册" class="headerlink" title="2.注册BrasdcastReceiver——静态 or 动态注册"></a>2.注册BrasdcastReceiver——静态 or 动态注册</h5><h6 id="1）静态注册"><a href="#1）静态注册" class="headerlink" title="1）静态注册"></a>1）静态注册</h6><p>静态注册是在AndroidManifest.xml文件中配置的。通过这种方式注册的广播为常驻型广播，当应用程序关闭后，有相应事件触发程序还是会被系统自动调用运行。<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">&lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"</div><div class="line">    package="com.example.ginny.test"&gt;</div><div class="line">    &lt;application</div><div class="line">    ...</div><div class="line">    android:theme="@style/AppTheme"&gt;</div><div class="line">    &lt;activity android:name=".MainActivity"&gt;</div><div class="line">        &lt;intent-filter&gt;</div><div class="line">            &lt;action android:name="android.intent.test.MAIN" /&gt;</div><div class="line">            &lt;category android:name="android.intent.category.LAUNCHER" /&gt;</div><div class="line">        &lt;/intent-filter&gt;</div><div class="line">    &lt;/activity&gt;</div><div class="line"></div><div class="line"></div><div class="line">    &lt;receiver android:name=".AnotherBroad"&gt;</div><div class="line">        &lt;intent-filter android:priority="100"&gt;   &lt;!--设置优先级。数字越大优先级越大（同优先级，动态注册优先于静态注册）--&gt;</div><div class="line">            &lt;action android:name="com.example.MY_text"&gt;</div><div class="line"></div><div class="line">            &lt;/action&gt;</div><div class="line">        &lt;/intent-filter&gt;</div><div class="line">    &lt;/receiver&gt;</div><div class="line"></div><div class="line">&lt;/application&gt;</div><div class="line"></div><div class="line">&lt;/manifest&gt;</div></pre></td></tr></table></figure></p>
+<p>在application标签中添加一个receiver标签，通过android:name指定接收器，然后在<intent-filter>中添加要接收的广播。</intent-filter></p>
+<h6 id="2）动态注册"><a href="#2）动态注册" class="headerlink" title="2）动态注册"></a>2）动态注册</h6><p>通过代码在.Java中注册。通过这种方式注册的广播会跟随Activity的生命周期，需要在Activity结束前调用unregisterReceiver(receiver)方法移除它。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">TestBroadcastReceiver receiver=<span class="keyword">new</span> TestBroadcastReceiver();</div><div class="line">IntentFilter filter=<span class="keyword">new</span> IntentFilter();</div><div class="line">filter.addAction(<span class="string">"com.example.MY_text"</span>);</div><div class="line">registerReceiver(receiver, filter);</div></pre></td></tr></table></figure></p>
+<p>######<em>动态注册的广播一定要注销</em>：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">super</span>.onDestroy();</div><div class="line">    unregisterReceiver(receiver);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<hr>
+<h3 id="五、发送广播"><a href="#五、发送广播" class="headerlink" title="五、发送广播"></a>五、发送广播</h3><h5 id="1-发送普通广播"><a href="#1-发送普通广播" class="headerlink" title="1.发送普通广播"></a>1.发送普通广播</h5><p>创建一个Intent对象，传入要发送的广播的值，再调用sendBroadcast(intent)方法将广播发送出去。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="string">"com.example.MY_text"</span>);</div><div class="line">sendBroadcast(intent);</div></pre></td></tr></table></figure></p>
+<h5 id="2-发送有序广播"><a href="#2-发送有序广播" class="headerlink" title="2.发送有序广播"></a>2.发送有序广播</h5><p>调用sendOrderedBroadcast(intent,receiverPermission)方法。该方法要传入两个参数，其中receiverPermisson是接收权限，可以为null，这里设置一个“TestPermission”权限。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="string">"com.example.MY_text"</span>);</div><div class="line">sendOrderedBroadcast(intent，“TestPermission”);</div></pre></td></tr></table></figure></p>
+<p>在manifest中添加“TestPermission”权限。<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;permission android:name="TestPermission" android:protectionLevel="normal"&gt;</div><div class="line">&lt;/permission&gt;</div></pre></td></tr></table></figure></p>
+<p>声明要使用该权限<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;uses-permission  android:name=<span class="string">"TestPermission"</span>/&gt;</div></pre></td></tr></table></figure></p>
+<h5 id="3-发送异步广播"><a href="#3-发送异步广播" class="headerlink" title="3.发送异步广播"></a>3.发送异步广播</h5><p>调用sendStickyBroadcast(intent)方法。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="string">"com.example.MY_text"</span>);</div><div class="line">sendStickyBroadcast(intent);</div></pre></td></tr></table></figure></p>
+<p>发送异步广播需要在manifest中声明权限”android.permission.BROADCAST_STICKY”<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;uses-permission android:name=<span class="string">"android.permission.BROADCAST_STICKY"</span> /&gt;</div></pre></td></tr></table></figure></p>
+<p>异步广播处理完之后的intent依然存在，直到把它去掉，即调用方法<code>removeStickyBroadcast(intent);</code></p>
+
+  </article>
+  <div class="random-toc-area">
+  <button class="btn-hide-toc btn-hide-toc-show" style="display: none" onclick="TOCToggle()">Show TOC</button>
+  <button class="btn-hide-toc btn-hide-toc-hide" onclick="TOCToggle()">Hide TOC</button>
+  <div class="random-toc">
+    <h2>Table of Content</h2>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、广播机制简介"><span class="toc-text">一、广播机制简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、广播的三种类型"><span class="toc-text">二、广播的三种类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#三、BroadcastReceiver的生命周期"><span class="toc-text">三、BroadcastReceiver的生命周期</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#四、BroadcastReceiver用法"><span class="toc-text">四、BroadcastReceiver用法</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-自定义BroadcastReceiver"><span class="toc-text">1.自定义BroadcastReceiver</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-注册BrasdcastReceiver——静态-or-动态注册"><span class="toc-text">2.注册BrasdcastReceiver——静态 or 动态注册</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#1）静态注册"><span class="toc-text">1）静态注册</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#2）动态注册"><span class="toc-text">2）动态注册</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#五、发送广播"><span class="toc-text">五、发送广播</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-发送普通广播"><span class="toc-text">1.发送普通广播</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-发送有序广播"><span class="toc-text">2.发送有序广播</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-发送异步广播"><span class="toc-text">3.发送异步广播</span></a></li></ol></li></ol></li></ol>
+  </div>
+</div>
+
+  
+<nav id="pagination">
+  
+
+  
+
+  
+    <a href="/2017/06/02/制作简易聊天界面/" class="next">Next post 制作简易聊天界面 &rarr;</a>
+  
+</nav>
+
+  <!-- JiaThis Button BEGIN -->
+
+<!-- JiaThis Button END -->
+
+
+      
+      
+      
+    </div>
+  </div>
+
+  <div id="bottom-outer">
+    <div id="bottom-inner">
+      Site by Ginny using
+      <a href="http://hexo.io">Hexo</a> & <a href="https://github.com/stiekel/hexo-theme-random">Random</a>
+      <br>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+
+
+<div id="user-card">
+  <div class="center-field">
+    <img class="avatar" src="http://oqwqpd0r4.bkt.clouddn.com/-343f06baf8cfafdd.jpg">
+    <p id="description"></p>
+    <ul class="social-icon">
+  
+  
+    <li>
+      <a href="https://github.com/Ginny07">
+        
+          <i class="icon iconfont github">&#xe606;</i>
+        
+      </a>
+    </li>
+  
+</ul>
+  </div>
+</div>
+
+
+<div id="btn-view">Hide</div>
+
+<script>
+// is trigger analytics / tongji script
+var isIgnoreHost = false;
+
+if(window && window.location && window.location.host) {
+  isIgnoreHost = ["localhost","127.0.0.1"].some(function(address){
+    return 0 === window.location.host.indexOf(address);
+  });
+}
+
+var isTriggerAnalytics = !( true && isIgnoreHost );
+
+</script>
+
+
+
+
+  
+  
+    <script src="/js/jquery-2.2.3.min.js"></script>
+  
+    <script src="/js/vegas.min.js"></script>
+  
+    <script src="/js/random.js"></script>
+  
+    <script src="/js/highlight.pack.js"></script>
+  
+    <script src="/js/jquery.mousewheel.pack.js"></script>
+  
+    <script src="/js/jquery.fancybox.pack.js"></script>
+  
+    <script src="/js/jquery.fancybox-thumbs.js"></script>
+  
+    <script src="/js/plyr.js"></script>
+  
+
+<script>
+
+  // fancybox
+  var backgroundImages = [];
+  
+  $('#post').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox') || $(this).parent().hasClass('fancybox-thumb')) return;
+      var alt = this.alt || this.title;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'post' + i);
+    });
+  });
+  $(".fancybox").fancybox();
+
+var vegasConfig = {"preload­Image":true,"transition":["slideLeft2","slideRight2","flash2"],"timer":true,"delay":15000,"shuffle":true,"count":28};
+var unsplashConfig = {"gravity":"north"};
+// is show background images
+var turnoffBackgroundImage = false;
+
+
+
+
+var backgroundColor = "34495E";
+
+$(".fancybox-thumb").fancybox({
+  prevEffect: 'none',
+  nextEffect: 'none',
+  helpers: {
+    title: {
+      type: 'outside'
+    },
+    thumbs: {
+      width: 50,
+      height: 50
+    }
+  }
+});
+
+// show video with plyr
+$(".video-container iframe").each(function(i){
+  var url = $(this).attr('src');
+  var id = url.split('/').pop();
+  var plyrContainer = document.createElement('div');
+  plyrContainer.className = 'plyr';
+  var plyrElement = document.createElement('div');
+  plyrElement.dataset.videoId = id;
+  switch(true) {
+    case url.search('youtube.com') >= 0:
+      plyrElement.dataset.type = 'youtube';
+      break;
+    case url.search('vimeo.com') >= 0:
+      plyrElement.dataset.type = 'vimeo';
+      break;
+    default:
+      return;
+  };
+  plyrContainer.appendChild(plyrElement);
+  $(this).parent().html(plyrContainer);
+});
+plyr.setup('.plyr', {iconUrl: '/css/sprite.svg'});
+</script>
+</body>
+</html>
+
